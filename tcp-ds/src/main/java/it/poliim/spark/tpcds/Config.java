@@ -39,7 +39,7 @@ public class Config implements Serializable {
 	}
 
 	@Parameter(names = { "-i",
-			"--inputFile" }, description = "The hdfs folder containing the tables")
+			"--inputFile" }, required = true, description = "The hdfs folder containing the tables")
 	public String inputFile;
 
 	@Parameter(names = { "-o",

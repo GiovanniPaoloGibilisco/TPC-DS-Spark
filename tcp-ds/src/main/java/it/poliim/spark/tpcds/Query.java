@@ -66,7 +66,7 @@ public class Query {
 			hdfs.delete(new Path(config.outputFolder), true);
 
 		// TODO change this to load the tables (which format? which schema?
-		DataFrame logsframe = sqlContext.read().load(config.inputFile);
+		DataFrame logsframe = sqlContext.read().orc(config.inputFile);
 		logsframe.cache();
 
 		String query;
