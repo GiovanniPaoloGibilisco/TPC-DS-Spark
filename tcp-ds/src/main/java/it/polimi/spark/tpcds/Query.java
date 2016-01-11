@@ -78,6 +78,7 @@ public class Query {
 
 		RemoteIterator<LocatedFileStatus> tableFolderIter = hdfs.listFiles(new Path(config.inputFile), false);
 
+		logger.info("Looking for data in: " + config.inputFile);
 		while (tableFolderIter.hasNext()) {
 			Path tableFolder = tableFolderIter.next().getPath();
 			String tableName = tableFolder.getName();
