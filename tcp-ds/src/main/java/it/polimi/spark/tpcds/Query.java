@@ -31,7 +31,7 @@ public class Query {
 		hdfs = FileSystem.get(hadoopConf);
 
 		// the spark configuration
-		SparkConf conf = new SparkConf().setAppName("logger-parser");
+		SparkConf conf = new SparkConf().setAppName("QueryExecutor");
 		// the configuration of the application (as launched by the user)
 		Config.init(args);
 		config = Config.getInstance();

@@ -49,7 +49,7 @@ public class Config implements Serializable {
 	@Parameter(names = { "-l", "--runLocal" }, description = "Use to run the tool in the local mode")
 	public boolean runLocal = false;
 
-	@Parameter(names = { "-is", "--queryId" }, description = "[optional] the id of the predefined query to run")
+	@Parameter(names = { "-id", "--queryId" }, description = "[optional] the id of the predefined query to run")
 	public String queryId;
 
 	@Parameter(names = { "-q", "--query" }, description = "[optional] the Hive Query to run")
