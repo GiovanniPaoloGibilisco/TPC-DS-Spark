@@ -66,7 +66,7 @@ public class Query {
 			hdfs.delete(new Path(config.outputFolder), true);
 
 		// TODO change this to load the tables (which format? which schema?
-		DataFrame logsframe = sqlContext.read().orc(config.inputFile);
+		/*DataFrame logsframe = sqlContext.read().orc(config.inputFile);
 		logsframe.cache();
 		logsframe.registerTempTable("call_center");
 
@@ -74,7 +74,9 @@ public class Query {
 		//debugging
 		logsframe.show();
 		logsframe.printSchema();
+		*/
 		
+		sqlContext.sql("import table call_center from '"+config.inputFile+"'");
 		
 		String query;
 		if (config.queryNumber > 0)
@@ -91,6 +93,7 @@ public class Query {
 		result.write().orc(config.outputFolder);
 		timer.split();
 		logger.info("Output Written: " + timer.getSplitTime());
+		logger.info("Result tuples count: "+result.count());
 		Row[] peek = result.head(PEEK_SIZE);
 
 		for (Row row : peek)
