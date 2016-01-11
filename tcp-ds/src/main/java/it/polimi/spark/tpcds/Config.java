@@ -34,7 +34,7 @@ public class Config implements Serializable {
 		_instance = new Config();
 		commander = new JCommander(_instance, args);
 		logger.info("Configuration: --inputFile {} --outputFolder {} --runlocal {} --queryNumber {} --query {} --usage {}",
-				new Object[] { _instance.inputFile, _instance.outputFolder, _instance.runLocal, _instance.queryNumber,
+				new Object[] { _instance.inputFile, _instance.outputFolder, _instance.runLocal, _instance.queryId,
 						_instance.query, _instance.usage });
 	}
 
@@ -49,8 +49,8 @@ public class Config implements Serializable {
 	@Parameter(names = { "-l", "--runLocal" }, description = "Use to run the tool in the local mode")
 	public boolean runLocal = false;
 
-	@Parameter(names = { "-n", "--queryNumber" }, description = "[optionale] the number of the predefined query to run")
-	public int queryNumber = -100;;
+	@Parameter(names = { "-is", "--queryId" }, description = "[optional] the id of the predefined query to run")
+	public String queryId;
 
 	@Parameter(names = { "-q", "--query" }, description = "[optional] the Hive Query to run")
 	public String query;

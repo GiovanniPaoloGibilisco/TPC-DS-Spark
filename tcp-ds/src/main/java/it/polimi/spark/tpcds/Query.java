@@ -5,7 +5,9 @@ import java.io.IOException;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
@@ -24,7 +26,7 @@ public class Query {
 	static final int PEEK_SIZE = 10;
 
 	public static void main(String[] args) throws IOException {
-		
+
 		Configuration hadoopConf = new Configuration();
 		hdfs = FileSystem.get(hadoopConf);
 
@@ -44,7 +46,7 @@ public class Query {
 		}
 
 		// either -n or -q has to be specified
-		if (config.queryNumber < 0 && config.query == null) {
+		if (config.queryId == null && config.query == null) {
 			logger.info(
 					"Either the number of the default query (-n) or the code of the query (-q) has to be specified");
 			config.usage();
@@ -52,8 +54,8 @@ public class Query {
 		}
 
 		// just one between -n or -q has to be specified
-		if (config.queryNumber > 0 && config.query != null) {
-			logger.info("You have specified the execution of the predefined query " + config.queryNumber
+		if (config.queryId != null && config.query != null) {
+			logger.info("You have specified the execution of the predefined query " + config.queryId
 					+ " and the execution of a custom query. Please specify just one.");
 			config.usage();
 			return;
@@ -66,24 +68,29 @@ public class Query {
 			hdfs.delete(new Path(config.outputFolder), true);
 
 		// TODO change this to load the tables (which format? which schema?
-		/*DataFrame logsframe = sqlContext.read().orc(config.inputFile);
-		logsframe.cache();
-		logsframe.registerTempTable("call_center");
+		/*
+		 * DataFrame logsframe = sqlContext.read().orc(config.inputFile);
+		 * logsframe.cache(); logsframe.registerTempTable("call_center");
+		 * 
+		 * 
+		 * //debugging logsframe.show(); logsframe.printSchema();
+		 */
 
-		
-		//debugging
-		logsframe.show();
-		logsframe.printSchema();
-		*/
-		
-		sqlContext.sql("import table call_center from '"+config.inputFile+"'");
-		
+		RemoteIterator<LocatedFileStatus> tableFolderIter = hdfs.listFiles(new Path(config.inputFile), false);
+
+		while (tableFolderIter.hasNext()) {
+			Path tableFolder = tableFolderIter.next().getPath();
+			String tableName = tableFolder.getName();
+			logger.info("Importing Table: " + tableName + "from: " + tableFolder.toString());
+			sqlContext.sql("import table " + tableName + " from '" + tableFolder.toString() + "'");
+		}
+
 		String query;
-		if (config.queryNumber > 0)
-			query = DefaultQueries.getQuery(config.queryNumber);
+		if (config.queryId != null)
+			query = DefaultQueries.getQuery(config.queryId);
 		else
 			query = config.query;
-		
+
 		logger.info("Running Query: " + query);
 		StopWatch timer = new StopWatch();
 		timer.start();
@@ -93,7 +100,7 @@ public class Query {
 		result.write().orc(config.outputFolder);
 		timer.split();
 		logger.info("Output Written: " + timer.getSplitTime());
-		logger.info("Result tuples count: "+result.count());
+		logger.info("Result tuples count: " + result.count());
 		Row[] peek = result.head(PEEK_SIZE);
 
 		for (Row row : peek)
@@ -101,7 +108,6 @@ public class Query {
 
 		sc.close();
 		logger.info("Finished");
-		
 
 	}
 
