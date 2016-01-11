@@ -12,7 +12,7 @@ public class DefaultQueries {
 		queries = new ArrayList<String>();
 		
 		//Query #1
-		queries.add("SELECT * from call_center;");
+		queries.add("SELECT * from call_center");
 		
 		//TODO: ADD query
 	}
