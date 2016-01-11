@@ -68,16 +68,21 @@ public class Query {
 		// TODO change this to load the tables (which format? which schema?
 		DataFrame logsframe = sqlContext.read().orc(config.inputFile);
 		logsframe.cache();
+		logsframe.registerTempTable("call_center");
 
+		
+		//debugging
+		logsframe.show();
+		logsframe.printSchema();
+		
+		
 		String query;
-
 		if (config.queryNumber > 0)
 			query = DefaultQueries.getQuery(config.queryNumber);
 		else
 			query = config.query;
-
+		
 		logger.info("Running Query: " + query);
-
 		StopWatch timer = new StopWatch();
 		timer.start();
 		DataFrame result = sqlContext.sql(query);
