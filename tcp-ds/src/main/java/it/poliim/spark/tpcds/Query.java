@@ -24,8 +24,7 @@ public class Query {
 	static final int PEEK_SIZE = 10;
 
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-
+		
 		Configuration hadoopConf = new Configuration();
 		hdfs = FileSystem.get(hadoopConf);
 
