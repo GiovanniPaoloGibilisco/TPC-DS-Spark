@@ -1,4 +1,4 @@
-package it.poliim.spark.tpcds;
+package it.polimi.spark.tpcds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ public class DefaultQueries {
 	public static String getQuery(int queryNumber){
 		if (DefaultQueries.queries == null)
 			DefaultQueries.init();
-		return queries.get(queryNumber);
+		return queries.get(queryNumber-1);
 	}
+
 }

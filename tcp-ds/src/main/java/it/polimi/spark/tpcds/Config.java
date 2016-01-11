@@ -1,4 +1,4 @@
-package it.poliim.spark.tpcds;
+package it.polimi.spark.tpcds;
 
 import java.io.Serializable;
 
