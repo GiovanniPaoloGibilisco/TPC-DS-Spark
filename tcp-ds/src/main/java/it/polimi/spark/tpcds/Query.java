@@ -4,10 +4,9 @@ import java.io.IOException;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
@@ -76,14 +75,15 @@ public class Query {
 		 * //debugging logsframe.show(); logsframe.printSchema();
 		 */
 
-		RemoteIterator<LocatedFileStatus> tableFolderIter = hdfs.listFiles(new Path(config.inputFile), false);
+		FileStatus[] tableFolders = hdfs.listStatus(new Path(config.inputFile));
 
 		logger.info("Looking for data in: " + config.inputFile);
-		while (tableFolderIter.hasNext()) {
-			Path tableFolder = tableFolderIter.next().getPath();
-			String tableName = tableFolder.getName();
-			logger.info("Importing Table: " + tableName + "from: " + tableFolder.toString());
-			sqlContext.sql("import table " + tableName + " from '" + tableFolder.toString() + "'");
+		for (FileStatus tableFolder : tableFolders) {
+			if (tableFolder.isDirectory()) {
+				String tableName = tableFolder.getPath().getName();
+				logger.info("Importing Table: " + tableName + "from: " + tableFolder.getPath());
+				sqlContext.sql("import table " + tableName + " from '" + tableFolder.getPath().toString() + "'");
+			}
 		}
 
 		String query;
