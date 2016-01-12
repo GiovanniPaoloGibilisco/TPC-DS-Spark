@@ -68,30 +68,9 @@ public class Query {
 			hdfs.delete(new Path(config.outputFolder), true);
 
 		if (config.db == null) {
-			logger.info("No Hive database name has been provided, using the name of the input directory");
-			config.db = Paths.get(config.inputFile).getFileName().toString();
+			logger.info("No Hive database name has been provided, using the name of the input directory preceeded by \"tpcds_text_\"");
+			config.db = "tpcds_text_"+Paths.get(config.inputFile).getFileName().toString();
 		}
-
-		logger.info("Deleating old DB " + config.db);
-		sqlContext.sql("drop database if exists " + config.db);
-		logger.info("Creating DB " + config.db);
-		sqlContext.sql("create database if not exists " + config.db);
-		sqlContext.sql("use " + config.db);
-
-		FileStatus[] tableFolders = hdfs.listStatus(new Path(config.inputFile));
-
-		logger.info("Looking for data in: " + config.inputFile);
-
-		for (FileStatus tableFolder : tableFolders) {
-			if (tableFolder.isDirectory()) {
-				String tableName = tableFolder.getPath().getName();
-				logger.info("Importing Table: " + tableName + " from: " + tableFolder.getPath());
-				sqlContext.sql("import from '" + tableFolder.getPath().toString() + "'");	
-			}
-		}
-		
-		logger.info("Tables loaded:");
-		sqlContext.sql("show tables");
 
 		String query;
 		if (config.queryId != null)
