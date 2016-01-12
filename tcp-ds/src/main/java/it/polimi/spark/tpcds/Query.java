@@ -72,19 +72,25 @@ public class Query {
 		logger.info("Tables loaded:");
 		sqlContext.sql("show tables");
 		
+		logger.info("Running Query: "+config.query);
+		sqlContext.sql(config.query);
 		
-		logger.info("Looking for data in: " + config.inputFile);	
+		logger.info("Tables loaded:");
+		sqlContext.sql("show tables");
 		
-		for (FileStatus tableFolder : tableFolders) {
-			if (tableFolder.isDirectory()) {
-				String tableName = tableFolder.getPath().getName();
-				logger.info("Importing Table: " + tableName + " from: " + tableFolder.getPath());
-				sqlContext.sql("import from '" + tableFolder.getPath().toString() + "'");
-				logger.info("Tables loaded:");
-				sqlContext.sql("show tables");
-				
-			}
-		}
+		
+//		logger.info("Looking for data in: " + config.inputFile);	
+//		
+//		for (FileStatus tableFolder : tableFolders) {
+//			if (tableFolder.isDirectory()) {
+//				String tableName = tableFolder.getPath().getName();
+//				logger.info("Importing Table: " + tableName + " from: " + tableFolder.getPath());
+//				sqlContext.sql("import table " + tableName + " from '" + tableFolder.getPath().toString() + "'");
+//				logger.info("Tables loaded:");
+//				sqlContext.sql("show tables");
+//				
+//			}
+//		}
 
 		String query;
 		if (config.queryId != null)
