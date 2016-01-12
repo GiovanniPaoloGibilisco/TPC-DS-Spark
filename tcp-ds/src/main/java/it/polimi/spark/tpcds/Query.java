@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.spark.SparkConf;
@@ -72,6 +71,9 @@ public class Query {
 			config.db = "tpcds_text_"+Paths.get(config.inputFile).getFileName().toString();
 		}
 
+		//Select the db
+		sqlContext.sql("use "+config.db);
+		
 		String query;
 		if (config.queryId != null)
 			query = DefaultQueries.getQuery(config.queryId);
