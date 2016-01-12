@@ -66,23 +66,23 @@ public class Query {
 		if (hdfs.exists(new Path(config.outputFolder)))
 			hdfs.delete(new Path(config.outputFolder), true);
 
-		// TODO change this to load the tables (which format? which schema?
-		/*
-		 * DataFrame logsframe = sqlContext.read().orc(config.inputFile);
-		 * logsframe.cache(); logsframe.registerTempTable("call_center");
-		 * 
-		 * 
-		 * //debugging logsframe.show(); logsframe.printSchema();
-		 */
 
 		FileStatus[] tableFolders = hdfs.listStatus(new Path(config.inputFile));
 
-		logger.info("Looking for data in: " + config.inputFile);
+		logger.info("Tables loaded:");
+		sqlContext.sql("show tables");
+		
+		
+		logger.info("Looking for data in: " + config.inputFile);	
+		
 		for (FileStatus tableFolder : tableFolders) {
 			if (tableFolder.isDirectory()) {
 				String tableName = tableFolder.getPath().getName();
-				logger.info("Importing Table: " + tableName + "from: " + tableFolder.getPath());
+				logger.info("Importing Table: " + tableName + " from: " + tableFolder.getPath());
 				sqlContext.sql("import table " + tableName + " from '" + tableFolder.getPath().toString() + "'");
+				logger.info("Tables loaded:");
+				sqlContext.sql("show tables");
+				
 			}
 		}
 
