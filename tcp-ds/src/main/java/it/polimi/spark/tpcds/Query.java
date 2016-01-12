@@ -1,6 +1,7 @@
 package it.polimi.spark.tpcds;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.hadoop.conf.Configuration;
@@ -66,31 +67,31 @@ public class Query {
 		if (hdfs.exists(new Path(config.outputFolder)))
 			hdfs.delete(new Path(config.outputFolder), true);
 
+		if (config.db == null) {
+			logger.info("No Hive database name has been provided, using the name of the input directory");
+			config.db = Paths.get(config.inputFile).getFileName().toString();
+		}
+
+		logger.info("Deleating old DB " + config.db);
+		sqlContext.sql("drop database if exists " + config.db);
+		logger.info("Creating DB " + config.db);
+		sqlContext.sql("create database if not exists " + config.db);
+		sqlContext.sql("use " + config.db);
 
 		FileStatus[] tableFolders = hdfs.listStatus(new Path(config.inputFile));
 
+		logger.info("Looking for data in: " + config.inputFile);
+
+		for (FileStatus tableFolder : tableFolders) {
+			if (tableFolder.isDirectory()) {
+				String tableName = tableFolder.getPath().getName();
+				logger.info("Importing Table: " + tableName + " from: " + tableFolder.getPath());
+				sqlContext.sql("import from '" + tableFolder.getPath().toString() + "'");	
+			}
+		}
+		
 		logger.info("Tables loaded:");
 		sqlContext.sql("show tables");
-		
-		logger.info("Running Query: "+config.query);
-		sqlContext.sql(config.query);
-		
-		logger.info("Tables loaded:");
-		sqlContext.sql("show tables");
-		
-		
-//		logger.info("Looking for data in: " + config.inputFile);	
-//		
-//		for (FileStatus tableFolder : tableFolders) {
-//			if (tableFolder.isDirectory()) {
-//				String tableName = tableFolder.getPath().getName();
-//				logger.info("Importing Table: " + tableName + " from: " + tableFolder.getPath());
-//				sqlContext.sql("import table " + tableName + " from '" + tableFolder.getPath().toString() + "'");
-//				logger.info("Tables loaded:");
-//				sqlContext.sql("show tables");
-//				
-//			}
-//		}
 
 		String query;
 		if (config.queryId != null)
