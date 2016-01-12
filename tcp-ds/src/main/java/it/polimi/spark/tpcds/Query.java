@@ -79,7 +79,7 @@ public class Query {
 			if (tableFolder.isDirectory()) {
 				String tableName = tableFolder.getPath().getName();
 				logger.info("Importing Table: " + tableName + " from: " + tableFolder.getPath());
-				sqlContext.sql("import table " + tableName + " from '" + tableFolder.getPath().toString() + "'");
+				sqlContext.sql("import from '" + tableFolder.getPath().toString() + "'");
 				logger.info("Tables loaded:");
 				sqlContext.sql("show tables");
 				
